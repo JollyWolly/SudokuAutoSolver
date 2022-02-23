@@ -6,6 +6,7 @@
 #include <iostream>
 #include <sstream>
 #include <stdlib.h>
+#include "Sudoku.h"
 
 using namespace std;
 
@@ -56,5 +57,7 @@ int main()
 		}
 	}
 
-	cout << outSdk(sdk);
+	Sudoku s = Sudoku(sdk);
+
+	cout << s.toString();
 }
