@@ -10,14 +10,15 @@ using namespace std;
 
 Sudoku::Sudoku(char sdk[9][9])
 {
-	
 	for (int i=0; i<9; i++)
 	{
 		for (int j=0; j<9; j++)
 		{
 			this->sdk[i][j] = sdk[i][j];
 
+			// Assign the squares to their proper box
 			int boxNum = (int)( floor(j/3) + 3*floor(i/3) );
+			// Assign the squares to their proper place in the box
 			int boxSqr = (int)( j%3 + 3*(i%3) );
 			box[boxNum][boxSqr] = sdk[i][j];
 		}
@@ -27,7 +28,6 @@ Sudoku::Sudoku(char sdk[9][9])
 
 string Sudoku::toString()
 {
-
 	string SUD_TOP = "╔═╤═╤═╦═╤═╤═╦═╤═╤═╗\r\n";
 	string SUD_MBX = "╟─┼─┼─╫─┼─┼─╫─┼─┼─╢\r\n";
 	string SUD_MBD = "╠═╪═╪═╬═╪═╪═╬═╪═╪═╣\r\n";
@@ -36,6 +36,8 @@ string Sudoku::toString()
 	string sdkStr = "";
         for (int i=0; i<9; i++)
         {
+		// Draw lines and borders of the box
+		// in between numbers
                 if (i == 0)
                         sdkStr += SUD_TOP;
                 else
@@ -43,7 +45,10 @@ string Sudoku::toString()
                                 sdkStr += SUD_MBD;
                         else
                                 sdkStr += SUD_MBX;
+		// end inbetween drawing
 
+
+		// draw numbers and format them correctly
                 sdkStr += "║";
                 for (int j = 0; j < 9; j++)
                 {
@@ -61,10 +66,11 @@ string Sudoku::toString()
 
 vector<char> Sudoku::getOpt(int n)
 {
-	//vector<char> opt;
+	// options: numbers missing from the box
 	vector<char> opt = {'1','2','3','4','5','6','7','8','9'};
 
-
+	// iterates through the box and removes existing numbers
+	// from the options vector
 	for (int i=0; i<9; i++)
 	{
 		if (box[n][i] != '-')
@@ -75,6 +81,7 @@ vector<char> Sudoku::getOpt(int n)
 	return opt;
 }
 
+// currently for testing purposes only
 string Sudoku::boxOpt()
 {
 	string str = "";
