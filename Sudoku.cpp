@@ -2,21 +2,36 @@
 #define SUDOKU_IMP
 
 #include "Sudoku.h"
+#include <math.h>
+#include <algorithm>
 
 using namespace std;
 
+
 Sudoku::Sudoku(char sdk[9][9])
 {
-	this->sdk = sdk;
+	
+	for (int i=0; i<9; i++)
+	{
+		for (int j=0; j<9; j++)
+		{
+			this->sdk[i][j] = sdk[i][j];
+
+			int boxNum = (int)( floor(j/3) + 3*floor(i/3) );
+			int boxSqr = (int)( j%3 + 3*(i%3) );
+			box[boxNum][boxSqr] = sdk[i][j];
+		}
+	}
 }
+
 
 string Sudoku::toString()
 {
 
-	string SUD_TOP = "╔═╤═╤═╦═╤═╤═╦═╤═╤═╗\r\n"
-	string SUD_MBX = "╟─┼─┼─╫─┼─┼─╫─┼─┼─╢\r\n"
-	string SUD_MBD = "╠═╪═╪═╬═╪═╪═╬═╪═╪═╣\r\n"
-	string SUD_BOT = "╚═╧═╧═╩═╧═╧═╩═╧═╧═╝\r\n"
+	string SUD_TOP = "╔═╤═╤═╦═╤═╤═╦═╤═╤═╗\r\n";
+	string SUD_MBX = "╟─┼─┼─╫─┼─┼─╫─┼─┼─╢\r\n";
+	string SUD_MBD = "╠═╪═╪═╬═╪═╪═╬═╪═╪═╣\r\n";
+	string SUD_BOT = "╚═╧═╧═╩═╧═╧═╩═╧═╧═╝\r\n";
 
 	string sdkStr = "";
         for (int i=0; i<9; i++)
@@ -44,5 +59,40 @@ string Sudoku::toString()
         return sdkStr;
 }
 
+vector<char> Sudoku::getOpt(int n)
+{
+	//vector<char> opt;
+	vector<char> opt = {'1','2','3','4','5','6','7','8','9'};
+
+
+	for (int i=0; i<9; i++)
+	{
+		if (box[n][i] != '-')
+		{
+			opt.erase(remove(opt.begin(), opt.end(), box[n][i]), opt.end());
+		}
+	}
+	return opt;
+}
+
+string Sudoku::boxOpt()
+{
+	string str = "";
+	for (int i=0; i<9; i++)
+	{
+		str += "{";
+		vector<char> opt = getOpt(i);
+		for (auto j = opt.begin(); j != opt.end(); ++j)
+		{
+			str += *j;
+			str += ",";
+		}
+		str += '\b';
+		str += "} ";
+		if (i%3 == 2)
+			str += '\n';
+	}
+	return str;
+}
 
 #endif

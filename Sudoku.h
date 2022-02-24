@@ -2,24 +2,27 @@
 #define SUDOKU_H
 
 #include <string>
-using std::string;
+#include <vector>
+
+using namespace std;
 
 class Sudoku
 {
 private:
 	char sdk[9][9];
-	bool isRowValid(int row);
-	bool isColValid(int col);
-	bool isBoxValid(int box);
+	char box[9][9];
 
 public:
 	Sudoku(char sdk[9][9]);
 	void insert(int x, int y);
-	//char[9] getRow(int index);
+	
+
+	vector<char> getOpt(int n);
 	//char[9] getCol(int index);
 	//char[3][3] getBox(int x, int y);
 
 	string toString();
+	string boxOpt();
 };
 
 #endif
