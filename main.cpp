@@ -6,30 +6,32 @@
 #include <iostream>
 #include <sstream>
 #include <stdlib.h>
+#include <memory>       // smart pointers
+#include <algorithm>    // builtin iterator functions for_each
+
 #include "Sudoku.h"
 
 using namespace std;
 
-#define SUD_TOP "╔═╤═╤═╦═╤═╤═╦═╤═╤═╗\r\n"
-#define SUD_MBX "╟─┼─┼─╫─┼─┼─╫─┼─┼─╢\r\n"
-#define SUD_MBD "╠═╪═╪═╬═╪═╪═╬═╪═╪═╣\r\n"
-#define SUD_BOT "╚═╧═╧═╩═╧═╧═╩═╧═╧═╝\r\n"
-
 
 int main()
 {
-	char sdk[9][9];
+	const int sz = 9;
+	Sudoku sPtr = Sudoku();
 
-	for (int i=0; i<9; i++)
+	for (int i=0; i<sz; i++)
 	{
-		for (int j = 0; j < 9; j++)
+		for (int j = 0; j<sz; j++)
 		{
-			cin >> sdk[i][j];
+			char c;
+			cin >> c;
+			sPtr.insert(i, j, c);
+			cout << sPtr.printSuperPosition();
 		}
 	}
+	//vector<vector<char>> asdf(9, vector<char>(9, 'A'));
+	//cout << asdf[0][2];
 
-	Sudoku s = Sudoku(sdk);
-
-	cout << s.toString();
-	cout << s.boxOpt();
+	cout << sPtr.toString();
+	cout << sPtr.printSuperPosition();
 }

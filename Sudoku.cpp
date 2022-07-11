@@ -8,23 +8,65 @@
 using namespace std;
 
 
-Sudoku::Sudoku(char sdk[9][9])
+Sudoku::Sudoku(int size, vector<char> options)
 {
-	for (int i=0; i<9; i++)
-	{
-		for (int j=0; j<9; j++)
-		{
-			this->sdk[i][j] = sdk[i][j];
+	this->size = size;
+	this->options = options;
 
-			// Assign the squares to their proper box
-			int boxNum = (int)( floor(j/3) + 3*floor(i/3) );
-			// Assign the squares to their proper place in the box
-			int boxSqr = (int)( j%3 + 3*(i%3) );
-			box[boxNum][boxSqr] = sdk[i][j];
-		}
-	}
+	this->options.resize(size);
+	//cout << options.size();
+
+	cout << endl;
+	sdk.resize(size, vector<char>(size, '-'));
+	box.resize(size, vector<char>(size, '-'));
+	sp.resize(size, vector<vector<char>>(size, this->options));
+
+	cout << "Success\n";
+	cout << printSuperPosition();
 }
 
+void Sudoku::insert(int x, int y, char c)
+{
+	sdk[x][y] = c;
+	updateSuperPosition(x, y, c);
+
+
+	int t = (int)sqrt(size);
+
+	// Assign the squares to their proper box
+	int boxNum = (int)( floor(x/t) + t*floor(y/t) );
+	// Assign the squares to their proper place in the box
+	int boxSqr = (int)( x%t + t*(y%t) );   
+
+	box[boxNum][boxSqr] = sdk[x][y];
+}
+
+void Sudoku::updateSuperPosition(int x, int y, char c)
+{
+	if (c == '-')
+		return;
+	
+	int sqSize = (int)sqrt(size);
+	int x_low  = floor(x/sqSize)*sqSize;
+	int x_hi   = x_low + sqSize;
+	int y_low  = floor(y/sqSize)*sqSize;
+	int y_hi   = y_low + sqSize;
+	
+	for (int i=0; i<size; i++)
+	{
+		// rows
+		sp[i][y].erase(remove(sp[i][y].begin(), sp[i][y].end(), c), sp[i][y].end());
+		// cols
+		sp[x][i].erase(remove(sp[x][i].begin(), sp[x][i].end(), c), sp[x][i].end());
+
+		// box
+		int xB = x_low + i%sqSize;
+		int yB = y_low + floor(i/sqSize);
+		sp[xB][yB].erase(remove(sp[xB][yB].begin(), sp[xB][yB].end(), c), sp[xB][yB].end());
+	}
+	sp[x][y].resize(1);
+	sp[x][y][0] = c;
+}
 
 string Sudoku::toString()
 {
@@ -34,7 +76,7 @@ string Sudoku::toString()
 	string SUD_BOT = "╚═╧═╧═╩═╧═╧═╩═╧═╧═╝\r\n";
 
 	string sdkStr = "";
-        for (int i=0; i<9; i++)
+        for (int i=0; i<size; i++)
         {
 		// Draw lines and borders of the box
 		// in between numbers
@@ -50,9 +92,10 @@ string Sudoku::toString()
 
 		// draw numbers and format them correctly
                 sdkStr += "║";
-                for (int j = 0; j < 9; j++)
+                for (int j = 0; j<size; j++)
                 {
-                        sdkStr += sdk[i][j];
+						sdkStr += sdk[i][j];
+                        //cout << sdk.at(i).at(j);
                         if ((j + 1) % 3 == 0)
                                 sdkStr += "║";
                         else
@@ -64,31 +107,71 @@ string Sudoku::toString()
         return sdkStr;
 }
 
-vector<char> Sudoku::getOpt(int n)
+string Sudoku::printSuperPosition()
+{
+	string TOP = "╔═══╤═══╤═══╦═══╤═══╤═══╦═══╤═══╤═══╗\r\n";
+	string MBX = "╟───┼───┼───╫───┼───┼───╫───┼───┼───╢\r\n";
+	string MBD = "╠═══╪═══╪═══╬═══╪═══╪═══╬═══╪═══╪═══╣\r\n";
+	string BOT = "╚═══╧═══╧═══╩═══╧═══╧═══╩═══╧═══╧═══╝\r\n";
+
+	string r = TOP;
+	int sqSize = (int)sqrt(size);
+	for (int i=0; i<size; i++)
+	{
+		if (i != 0)
+			r += MBX;
+
+		vector<vector<char>> tmp = sp[i];
+		for (int b=0; b<sqSize; b++)
+		{
+			r += "║";
+			for (int j=0; j<size; j++)
+			{
+				if (tmp[j].size() == 1)
+				{
+					tmp[j].resize(size, '#');
+				}
+				tmp[j].resize(size, ' ');
+				for (int a=0; a<sqSize; a++)
+				{
+					r += tmp[j][a+b*sqSize];
+				}
+				r += "│";
+			}
+			r += "\b║\r\n";
+		}
+		
+	}
+
+	r += BOT;
+	return r;
+}
+
+// int n : box number
+vector<char> Sudoku::getMissingBox(int n)
 {
 	// options: numbers missing from the box
-	vector<char> opt = {'1','2','3','4','5','6','7','8','9'};
-
+	vector<char> tmp(options);
 	// iterates through the box and removes existing numbers
 	// from the options vector
-	for (int i=0; i<9; i++)
+	for (int i=0; i<size; i++)
 	{
 		if (box[n][i] != '-')
 		{
-			opt.erase(remove(opt.begin(), opt.end(), box[n][i]), opt.end());
+			tmp.erase(remove(tmp.begin(), tmp.end(), box[n][i]), tmp.end());
 		}
 	}
-	return opt;
+	return tmp;
 }
 
 // currently for testing purposes only
 string Sudoku::boxOpt()
 {
 	string str = "";
-	for (int i=0; i<9; i++)
+	for (int i=0; i<size; i++)
 	{
 		str += "{";
-		vector<char> opt = getOpt(i);
+		vector<char> opt = getMissingBox(i);
 		for (auto j = opt.begin(); j != opt.end(); ++j)
 		{
 			str += *j;
@@ -96,7 +179,7 @@ string Sudoku::boxOpt()
 		}
 		str += '\b';
 		str += "} ";
-		if (i%3 == 2)
+		if (i%(int)sqrt(size) == (int)sqrt(size)-1)
 			str += '\n';
 	}
 	return str;
