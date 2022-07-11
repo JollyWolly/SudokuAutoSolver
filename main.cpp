@@ -16,8 +16,8 @@ using namespace std;
 
 int main()
 {
-	const int sz = 9;
-	Sudoku sPtr = Sudoku();
+	const int sz = 4;
+	Sudoku sPtr = Sudoku(4);
 
 	for (int i=0; i<sz; i++)
 	{
@@ -34,4 +34,5 @@ int main()
 
 	cout << sPtr.toString();
 	cout << sPtr.printSuperPosition();
+
 }

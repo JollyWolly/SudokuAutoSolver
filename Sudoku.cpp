@@ -64,62 +64,127 @@ void Sudoku::updateSuperPosition(int x, int y, char c)
 		int yB = y_low + floor(i/sqSize);
 		sp[xB][yB].erase(remove(sp[xB][yB].begin(), sp[xB][yB].end(), c), sp[xB][yB].end());
 	}
-	sp[x][y].resize(1);
-	sp[x][y][0] = c;
+	sp[x][y].resize(0);
+	//sp[x][y][0] = ' ';
 }
 
 string Sudoku::toString()
 {
-	string SUD_TOP = "╔═╤═╤═╦═╤═╤═╦═╤═╤═╗\r\n";
-	string SUD_MBX = "╟─┼─┼─╫─┼─┼─╫─┼─┼─╢\r\n";
-	string SUD_MBD = "╠═╪═╪═╬═╪═╪═╬═╪═╪═╣\r\n";
-	string SUD_BOT = "╚═╧═╧═╩═╧═╧═╩═╧═╧═╝\r\n";
+	int sqSize = (int)sqrt(size);
 
-	string sdkStr = "";
-        for (int i=0; i<size; i++)
-        {
-		// Draw lines and borders of the box
-		// in between numbers
-                if (i == 0)
-                        sdkStr += SUD_TOP;
-                else
-                        if (i%3 == 0)
-                                sdkStr += SUD_MBD;
-                        else
-                                sdkStr += SUD_MBX;
+	// SET UP FANCY STRING BOX
+	string r = "╔";
+	string MBX = "╟";
+	string MBD = "╠";
+	string BOT = "╚";
+	for (int i=0; i<size; i++)
+	{
+		r += "═";
+		MBX += "─";
+		MBD += "═";
+		BOT += "═";
+		if ((i+1)%sqSize == 0)
+		{
+			r += "╦";
+			MBX += "╫";
+			MBD += "╬";
+			BOT += "╩";
+		}
+		else
+		{	
+			r += "╤";
+			MBX += "┼";
+			MBD += "╪";
+			BOT += "╧";
+		}
+	}
+	r += "\b╗\r\n";
+	MBX += "\b╢\r\n";
+	MBD += "\b╣\r\n";
+	BOT += "\b╝\r\n";
+
+    for (int i=0; i<size; i++)
+    {
+	// Draw lines and borders of the box
+	// in between numbers
+        if (i != 0)
+            if (i%sqSize == 0)
+                r += MBD;
+            else
+                r += MBX;
 		// end inbetween drawing
 
 
 		// draw numbers and format them correctly
-                sdkStr += "║";
+                r += "║";
                 for (int j = 0; j<size; j++)
                 {
-						sdkStr += sdk[i][j];
+						r += sdk[i][j];
                         //cout << sdk.at(i).at(j);
-                        if ((j + 1) % 3 == 0)
-                                sdkStr += "║";
+                        if ((j + 1) % sqSize == 0)
+                                r += "║";
                         else
-                                sdkStr += "│";
+                                r += "│";
                 }
-                sdkStr += "\r\n";
+                r += "\r\n";
         }
-        sdkStr += SUD_BOT;
-        return sdkStr;
+        r += BOT;
+        return r;
 }
 
 string Sudoku::printSuperPosition()
 {
-	string TOP = "╔═══╤═══╤═══╦═══╤═══╤═══╦═══╤═══╤═══╗\r\n";
-	string MBX = "╟───┼───┼───╫───┼───┼───╫───┼───┼───╢\r\n";
-	string MBD = "╠═══╪═══╪═══╬═══╪═══╪═══╬═══╪═══╪═══╣\r\n";
-	string BOT = "╚═══╧═══╧═══╩═══╧═══╧═══╩═══╧═══╧═══╝\r\n";
-
-	string r = TOP;
 	int sqSize = (int)sqrt(size);
+
+	// SET UP FANCY STRING BOX
+	string thicLine = "";
+	string thinLine = "";
+	for (int i=0; i<sqSize; i++)
+	{
+		thicLine += "═";
+		thinLine += "─";
+	}
+
+	string r = "╔";
+	string MBX = "╟";
+	string MBD = "╠";
+	string BOT = "╚";
+	for (int i=0; i<size; i++)
+	{
+		r += thicLine;
+		MBX += thinLine;
+		MBD += thicLine;
+		BOT += thicLine;
+		if ((i+1)%sqSize == 0)
+		{
+			r += "╦";
+			MBX += "╫";
+			MBD += "╬";
+			BOT += "╩";
+		}
+		else
+		{	
+			r += "╤";
+			MBX += "┼";
+			MBD += "╪";
+			BOT += "╧";
+		}
+	}
+	r += "\b╗\r\n";
+	MBX += "\b╢\r\n";
+	MBD += "\b╣\r\n";
+	BOT += "\b╝\r\n";
+	// END FANCY STRING BOX SET UP
+
 	for (int i=0; i<size; i++)
 	{
 		if (i != 0)
-			r += MBX;
+		{	
+			if ((i)%sqSize == 0)	
+				r += MBD;
+			else
+				r += MBX;
+		}
 
 		vector<vector<char>> tmp = sp[i];
 		for (int b=0; b<sqSize; b++)
@@ -127,9 +192,9 @@ string Sudoku::printSuperPosition()
 			r += "║";
 			for (int j=0; j<size; j++)
 			{
-				if (tmp[j].size() == 1)
+				if (tmp[j].size() == 0)
 				{
-					tmp[j].resize(size, '#');
+					tmp[j].resize(size, sdk[i][j]);
 				}
 				tmp[j].resize(size, ' ');
 				for (int a=0; a<sqSize; a++)
@@ -137,8 +202,10 @@ string Sudoku::printSuperPosition()
 					r += tmp[j][a+b*sqSize];
 				}
 				r += "│";
+				if ((j+1)%sqSize == 0)
+					r += "\b║";
 			}
-			r += "\b║\r\n";
+			r += "\r\n";
 		}
 		
 	}
