@@ -16,8 +16,8 @@ using namespace std;
 
 int main()
 {
-	const int sz = 4;
-	Sudoku sPtr = Sudoku(4);
+	const int sz = 9;
+	Sudoku sPtr = Sudoku();
 
 	for (int i=0; i<sz; i++)
 	{
